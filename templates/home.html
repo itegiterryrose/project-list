@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Desserts Title -->
+    <h1 class="text-3xl font-bold text-center md:text-left">Desserts</h1>
+
+    <!-- Main Layout -->
+    <div class="flex flex-col md:flex-row gap-6 mt-6">
+        <!-- Products Section -->
+        <div class="w-full md:w-3/4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {% for key, image in images.items() %}
+            <!-- Product Cards -->
+            <div class="bg-gray-100 rounded-lg hover:shadow-xl transition-all duration-300 hover:border-orange-500">
+                <div class="relative">
+                    <a href="{{ url_for('details', image_id=key) }}">        
+                        <img src="{{ url_for('static', filename='images/' + image.filename) }}" alt="{{ image.title }}" class="w-full">
+                    </a>
+                    <button class="add-to-cart absolute bottom-1 left-1/2 transform -translate-x-1/2 bg-white text-black px-2 rounded-lg hover:bg-orange-600 transition-all" 
+                    data-name="{{ image.title }}" 
+                    data-price="{{ image.price }}" 
+                    data-image="{{ url_for('static', filename='images/' + image.filename) }}">
+                <img src="{{ url_for('static', filename='images/icon-add-to-cart.svg') }}" alt="Cart Icon" class="w-6 h-6 inline"> Add to Cart
+            </button>
+            
+                </div>
+                <p class="text-sm text-gray-400 mt-2">{{ image.title }}</p>
+                <p class="text-black">{{ image.title }} with Berries</p>
+                <p class="text-orange-600 font-bold">${{ image.price }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="w-full md:w-1/4 h-64 bg-white shadow-lg p-4 rounded-lg flex flex-col items-center h-auto">
+            <h2 class="font-bold text-red-500">Your Cart (<span id="cart-count">0</span>)</h2>
+          <div id="empty-cart" class="text-center">
+              <img src="static/images/illustration-empty-cart.svg" alt="empty cart" class="w-24 h-24 ml-24 mr-32">
+              <p class="text-red-900 text-center mt-2">Your added items will appear here!</p>
+          </div>
+          <!-- Cart Items Container -->
+<div id="cart-items" class="w-full mt-4 ml-0"></div>
+
+<!-- Carbon Neutral Message -->
+<p>
+    <img src="{{ url_for('static', filename='images/icon-carbon-neutral.svg') }}" class="float-left text-sm">
+    This is a carbon-neutral delivery
+</p>
+
+<!-- Confirm Order Button (Initially Hidden) -->
+<button id="confirm-order" class="bg-red-600 text-white rounded-lg text-center w-40 ml-16 mr-16 hidden">
+    Confirm Order
+</button>
+
+<!-- Order Summary Popup -->
+<div id="order-summary" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50 hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+        <img src="{{ url_for('static', filename='images/icon-order-confirmed.svg') }}">
+        <p class="text-3xl font-bold ml-0">Order Confirmed</p>
+        <p class="text-sm text-gray-400">We hope you enjoy your food</p>
+        <div id="order-summary-content" class="mt-4"></div>
+        <button id="close-order-summary" class="mt-4 w-full bg-red-600 text-white py-2 rounded-lg" onclick="closeOrderSummary()">
+            Back
+        </button>
+        
+    </div>
+</div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

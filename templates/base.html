@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32x32.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <title>Frontend Mentor | Product list with cart</title>
+
+  <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
+  <style>
+    .attribution { font-size: 11px; text-align: center; }
+    .attribution a { color: hsl(228, 45%, 44%); }
+  </style>
+</head>
+<body class="bg-gray-100 p-4">
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <ul class="flashes">
+      {% for category, message in messages %}
+      <li class="{{ category }}">{{ message }}</li>
+      {% endfor %}
+  </ul>
+  {% endif %}
+  {% endwith %}
+
+  <!-- Content Block -->
+  <div class="container mt-4">
+      {% block content %}{% endblock %}
+  </div>
+  <script>
+    let cart = {};
+
+    // Function to add an item to the cart
+    function addToCart(name, price, imageUrl) {
+        cart[name] = cart[name] || { price: price, quantity: 0, image: imageUrl };
+        cart[name].quantity++;
+        updateCart();
+    }
+
+    // Function to update the cart UI
+    function updateCart() {
+        const cartContainer = document.getElementById("cart-items");
+        const confirmOrderButton = document.getElementById("confirm-order");
+
+        cartContainer.innerHTML = ""; // Clear previous items
+        let totalItems = 0;
+
+        for (let item in cart) {
+            totalItems += cart[item].quantity;
+            let total = (cart[item].price * cart[item].quantity).toFixed(2);
+
+            cartContainer.innerHTML += `
+                <div class='border-b border-gray-300 py-2 flex items-center'>
+                    <img src="${cart[item].image}" alt="${item}" class="w-12 h-12 rounded-md mr-4">
+                    <div>
+                        <p class='font-bold'>${item}</p>
+                        <p class='text-sm text-gray-600'>Quantity: ${cart[item].quantity} x $${cart[item].price.toFixed(2)}</p>
+                        <p class='font-bold text-orange-600'>Total: $${total}</p>
+                    </div>
+                </div>`;
+        }
+
+        confirmOrderButton.style.display = totalItems > 0 ? "block" : "none";
+    }
+
+    // Function to show the order summary
+    function showOrderSummary() {
+        const orderSummary = document.getElementById("order-summary");
+        const orderSummaryContent = document.getElementById("order-summary-content");
+        orderSummaryContent.innerHTML = "";
+        let totalAmount = 0;
+
+        for (let item in cart) {
+            let itemTotal = (cart[item].price * cart[item].quantity).toFixed(2);
+            totalAmount += parseFloat(itemTotal);
+
+            orderSummaryContent.innerHTML += `
+    <div class='border-b border-gray-300 py-2 flex items-center relative'>
+        <img src="${cart[item].image}" alt="${item}" class="w-16 h-16 rounded-md mr-4">
+        <div>
+            <p class='font-bold'>${item}</p>
+            <p class='text-sm text-gray-600'>Quantity: ${cart[item].quantity} x $${cart[item].price.toFixed(2)}</p>
+            <p class='font-bold text-orange-600'>Total: $${itemTotal}</p>
+        </div>
+        <button class="absolute right-2 top-2 text-red-600 font-bold hover:text-red-800" onclick="removeFromCart('${item}')">X</button>
+    </div>`;
+        }
+
+        orderSummaryContent.innerHTML += `<div class='text-xl font-bold mt-4 text-center'>Grand Total: $${totalAmount.toFixed(2)}</div>`;
+        orderSummary.classList.remove("hidden");
+    }
+
+    function closeOrderSummary() {
+    document.getElementById("order-summary").classList.add("hidden"); // Hides the modal
+}
+
+
+    // Attach event listener for all "Add to Cart" buttons using event delegation
+    document.addEventListener("click", function (event) {
+        if (event.target.closest(".add-to-cart")) {
+            let button = event.target.closest(".add-to-cart");
+            addToCart(button.dataset.name, parseFloat(button.dataset.price), button.dataset.image);
+        }
+    });
+
+    // Attach event listener for Confirm Order button
+    document.getElementById("confirm-order").addEventListener("click", showOrderSummary);
+
+function removeFromCart(item) {
+    if (cart[item]) {
+        delete cart[item]; // Remove item from cart
+    }
+    updateCart(); // Refresh cart display
+    showOrderSummary(); // Update the order summary modal
+}
+</script>
+
+    
+    </body>
+    </html>
+    

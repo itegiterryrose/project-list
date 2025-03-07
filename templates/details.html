@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-3xl mb-8 ml-48">{{ image.title }}</h1>
+<img src="{{ url_for('static', filename='images/' + image.filename) }}" alt="{{ image.title }}" width="550px" height="250px" class="ml-48 ">
+<button class="bg-white rounded-lg text-black hover:bg-orange-600 mt-6 p-4 ml-40"><a href="{{ url_for('home') }}">Back to Gallery</a></button>
+{% endblock %}
